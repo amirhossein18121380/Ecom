@@ -39,8 +39,12 @@ namespace Ecom.business.Concrete
                 totalCost += ans.Price;
             }
 
+            byte[] gb = Guid.NewGuid().ToByteArray();
+            int i = BitConverter.ToInt32(gb, 0);
+            long lastunique = BitConverter.ToInt64(gb, 0);
+
             saleFactor.TotalCost = totalCost;
-            saleFactor.ReceiptNumber = Guid.NewGuid();
+            saleFactor.ReceiptNumber = lastunique;
             saleFactor.ReceiptDate = DateTime.Now;
 
             var res = await _saleFactorRepository.AddAsync(saleFactor);
@@ -60,7 +64,7 @@ namespace Ecom.business.Concrete
 
                 var rs = await _productSaleFactorRepository.AddAsync(factor);
 
-                if (rs != null || rs.Id == 0)
+                if (rs == null || rs.Id == 0)
                 {
                     return null;
                     ///some extra logging things.......

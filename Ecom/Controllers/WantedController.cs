@@ -25,7 +25,6 @@ namespace Ecom.Controllers
             _saleFactoryService = saleFactoryService;
         }
 
-
         [HttpPost]
         [Route("AddProduct")]
         public async Task<IResponse> AddProduct([FromForm] AddProductDto model)
@@ -41,13 +40,14 @@ namespace Ecom.Controllers
             }
         }
 
+
         [HttpPost]
         [Route("RecordReceipt")]
         public async Task<IResponse> RecordReceipt([FromForm] ReceiptDto model)
         {
             var result =  await _receiptService.AddAsync(model);
 
-            if (result.Success)
+            if (result.Success == true)
             {
                 return new SuccessResponse(200, Messages.AddedSuccesfully);
             }

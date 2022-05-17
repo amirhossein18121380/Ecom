@@ -1,11 +1,9 @@
-﻿using System.Configuration;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using Businesses.Abstract;
 using Businesses.Concrete;
 using Businesses.Mappings;
-using Common.DataAccess;
 using DataAccess.Abstract;
 using DataAccess.Concrete.Context;
 using DataAccess.Concrete.EntityFramework;
@@ -15,7 +13,6 @@ using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
 using Ecom.DataAccess.Concrete.EntityFramework;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,20 +31,32 @@ builder.Services.AddDependencyResolvers(builder.Configuration, new ICoreModule[]
     new CoreModule()
 });
 
-//builder.Services.AddScoped<IProductRepository, EfProductRepository>();
-//builder.Services.AddScoped<IProductCategoryRepository, EfProductCategoryRepository>();
-//builder.Services.AddScoped<IProductReceiptRepository, EFProductReceiptRepository>();
-//builder.Services.AddScoped<IProductSaleFactorRepository, EfProductSaleFactorRepository>();
-//builder.Services.AddScoped<IRecriptRepository, EfRecriptRepository>();
-//builder.Services.AddScoped<ISaleFactorRepository, EFSaleFactorRepository>();
+builder.Services.AddScoped<IProductRepository, EfProductRepository>();
+builder.Services.AddScoped<IProductCategoryRepository, EfProductCategoryRepository>();
+builder.Services.AddScoped<IProductReceiptRepository, EFProductReceiptRepository>();
+builder.Services.AddScoped<IProductSaleFactorRepository, EfProductSaleFactorRepository>();
+builder.Services.AddScoped<IRecriptRepository, EfRecriptRepository>();
+builder.Services.AddScoped<ISaleFactorRepository, EFSaleFactorRepository>();
 //builder.Services.AddScoped<Automapper>();
 
 
 
-//builder.Services.AddScoped<IProductService, ProductManager>();
-//builder.Services.AddScoped<IReceiptService, ReceiptManager>();
-//builder.Services.AddScoped<ISaleFactoryService, SaleFactoryManager>();
+builder.Services.AddScoped<IProductService, ProductManager>();
+builder.Services.AddScoped<IReceiptService, ReceiptManager>();
+builder.Services.AddScoped<ISaleFactoryService, SaleFactoryManager>();
 
+builder.Services.AddAutofac();
+
+// Auto Mapper Configurations
+var mappingConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new Automapper());
+});
+
+IMapper mapper = mappingConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
+
+//builder.Services.AddAutoMapper();
 
 Host.CreateDefaultBuilder(args)
     .UseServiceProviderFactory(new AutofacServiceProviderFactory())

@@ -28,9 +28,15 @@ namespace Businesses.Concrete
         public async Task<IResponse> AddAsync(AddProductDto model)
         {
             var product = _mapper.Map<Product>(model);
+
+
+            byte[] gb = Guid.NewGuid().ToByteArray();
+            int i = BitConverter.ToInt32(gb, 0);
+            long lastunique = BitConverter.ToInt64(gb, 0);
+
             product.Name = model.Name;
             product.Price = model.Price;
-            product.Code = Guid.NewGuid(); 
+            product.Code = lastunique;
             product.Description = model.Description;
             product.Createon = DateTime.Now;
             
@@ -46,7 +52,7 @@ namespace Businesses.Concrete
                 
                 var rs = await _productCategoryRepository.AddAsync(prcat);
 
-                if (rs != null || rs.Id == 0)
+                if (rs == null || rs.Id == 0)
                 {
                     return null;
                     ///some extra logging things.......
