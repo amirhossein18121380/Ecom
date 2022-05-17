@@ -9,6 +9,7 @@ using Ecom.business.Abstract;
 using Ecom.business.FluentValidation;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.business.Concrete
 {
@@ -27,7 +28,7 @@ namespace Ecom.business.Concrete
         }
 
         [ValidationAspect(typeof(SaleFactorSaleFactorDtoValidation))]
-        public async Task<IResponse> AddAsync(SaleFactorDto model)
+        public async Task<ActionResult<bool>> AddAsync(SaleFactorDto model)
         {
             var saleFactor = _mapper.Map<SaleFactor>(model);
 
@@ -39,15 +40,19 @@ namespace Ecom.business.Concrete
                 totalCost += ans.Price;
             }
 
+            byte[] gb = Guid.NewGuid().ToByteArray();
+            int i = BitConverter.ToInt32(gb, 0);
+            long lastunique = BitConverter.ToInt64(gb, 0);
+
             saleFactor.TotalCost = totalCost;
-            saleFactor.ReceiptNumber = Guid.NewGuid();
+            saleFactor.ReceiptNumber = lastunique;
             saleFactor.ReceiptDate = DateTime.Now;
 
             var res = await _saleFactorRepository.AddAsync(saleFactor);
 
             if (res == null)
             {
-                return new ErrorResponse(400, "something bad happened in sale factor");
+                return HttpHelper.FailedContent("something bad happened");
             }
 
             foreach (var productId in model.ProductIds)
@@ -60,14 +65,14 @@ namespace Ecom.business.Concrete
 
                 var rs = await _productSaleFactorRepository.AddAsync(factor);
 
-                if (rs != null || rs.Id == 0)
+                if (rs == null || rs.Id == 0)
                 {
-                    return null;
+                    return HttpHelper.FailedContent("something wrong with productReceiptRepository");
                     ///some extra logging things.......
                 }
             }
 
-            return new SuccessResponse(200, Messages.AddedSuccesfully);
+            return true;
         }
     }
 }

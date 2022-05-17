@@ -9,7 +9,7 @@ namespace DataModel.Models
         public long Id { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
-        public Guid Code { get; set; }
+        public long Code { get; set; }
         public string Description { get; set; }
         public DateTime Createon { get; set; }
     }

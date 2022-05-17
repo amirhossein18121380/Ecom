@@ -9,6 +9,5 @@ namespace DataModel.Models
         public long ProductId { get; set; }
 
         //public Receipt Receipt { get; set; }
-        //public Product Product { get; set; }
     }
 }

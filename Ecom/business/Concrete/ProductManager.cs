@@ -2,13 +2,12 @@
 using Businesses.Abstract;
 using Businesses.FluentValidation;
 using Common.Utilities;
-using Common.Utilities.Responses.Abstract;
-using Common.Utilities.Responses.Concrete;
 using DataAccess.Abstract;
 using DataModel.Models;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
 using Ecom.DataModel.Dtos;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Businesses.Concrete
 {
@@ -25,12 +24,17 @@ namespace Businesses.Concrete
         }
 
         [ValidationAspect(typeof(AddProductValidator))]
-        public async Task<IResponse> AddAsync(AddProductDto model)
+        public async Task<ActionResult<bool>> AddAsync(AddProductDto model)
         {
             var product = _mapper.Map<Product>(model);
+
+            byte[] gb = Guid.NewGuid().ToByteArray();
+            int i = BitConverter.ToInt32(gb, 0);
+            long lastunique = BitConverter.ToInt64(gb, 0);
+
             product.Name = model.Name;
             product.Price = model.Price;
-            product.Code = Guid.NewGuid(); 
+            product.Code = lastunique;
             product.Description = model.Description;
             product.Createon = DateTime.Now;
             
@@ -46,14 +50,14 @@ namespace Businesses.Concrete
                 
                 var rs = await _productCategoryRepository.AddAsync(prcat);
 
-                if (rs != null || rs.Id == 0)
+                if (rs == null || rs.Id == 0)
                 {
-                    return null;
-                    ///some extra logging things.......
+                    return HttpHelper.FailedContent("not updated");
                 }
             }
 
-            return new SuccessResponse(200, Messages.AddedSuccesfully);
+            //return new SuccessResponse(200, Messages.AddedSuccesfully);
+            return true;
         }
     }
 }

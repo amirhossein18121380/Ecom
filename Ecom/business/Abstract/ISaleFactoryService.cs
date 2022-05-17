@@ -1,10 +1,10 @@
-﻿using Common.Utilities.Responses.Abstract;
-using DataModel.Dtos;
+﻿using DataModel.Dtos;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.business.Abstract
 {
     public interface ISaleFactoryService
     {
-        Task<IResponse> AddAsync(SaleFactorDto model);
+        Task<ActionResult<bool>> AddAsync(SaleFactorDto model);
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Businesses.Abstract;
 using Common.Utilities;
 using Common.Utilities.Responses.Abstract;
 using Common.Utilities.Responses.Concrete;
@@ -10,6 +9,7 @@ using Ecom.business.Abstract;
 using Ecom.business.FluentValidation;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.business.Concrete
 {
@@ -29,7 +29,7 @@ namespace Ecom.business.Concrete
         }
 
         [ValidationAspect(typeof(ReceipDtoValidation))]
-        public async Task<IResponse> AddAsync(ReceiptDto model)
+        public async Task<ActionResult<bool>> AddAsync(ReceiptDto model)
         {
             var receipt = _mapper.Map<Receipt>(model);
 
@@ -41,15 +41,20 @@ namespace Ecom.business.Concrete
                 totalCost += ans.Price;
             }
 
+            byte[] gb = Guid.NewGuid().ToByteArray();
+            int i = BitConverter.ToInt32(gb, 0);
+            long lastunique = BitConverter.ToInt64(gb, 0);
+
             receipt.TotalCost = totalCost;
-            receipt.ReceiptNumber = Guid.NewGuid();
+            receipt.ReceiptNumber = lastunique;
             receipt.ReceiptDate = DateTime.Now;
 
             var res = await _recriptRepository.AddAsync(receipt);
 
             if (res == null)
             {
-                return new ErrorResponse(400, "something bad happened");
+                //return new ErrorResponse(400, "something bad happened");
+                return HttpHelper.FailedContent("something bad happened");
             }
 
 
@@ -63,14 +68,13 @@ namespace Ecom.business.Concrete
 
                 var rs = await _productReceiptRepository.AddAsync(resriv);
 
-                if (rs != null || rs.Id == 0)
+                if (rs == null || rs.Id == 0)
                 {
-                    return null;
+                    return HttpHelper.FailedContent("something wrong with productReceiptRepository");
                     ///some extra logging things.......
                 }
             }
-
-            return new SuccessResponse(200, Messages.AddedSuccesfully);
+            return true;
         }
     }
 }

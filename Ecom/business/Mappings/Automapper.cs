@@ -18,6 +18,7 @@ namespace Businesses.Mappings
             CreateMap<Product, AddProductDto>().ReverseMap();
             CreateMap<Receipt, ReceiptDto>().ReverseMap();
             CreateMap<SaleFactor, SaleFactorDto>().ReverseMap();
+            CreateMap<Category, CategoryDto>().ReverseMap();
         }
     }
 }
