@@ -34,7 +34,7 @@ namespace Ecom.Controllers
             try
             {
                 var result = await _productService.AddAsync(model);
-                if (result != null)
+                if (result.Value == true)
                 {
                     return new SuccessResponse(200, Messages.AddedSuccesfully);
                 }
@@ -59,13 +59,12 @@ namespace Ecom.Controllers
             {
                 var result = await _receiptService.AddAsync(model);
 
-                if (result != null)
+                if (result.Value == true)
                 {
                     return new SuccessResponse(200, Messages.AddedSuccesfully);
                 }
                 else
                 {
-                    //return new ErrorResponse("WantedController/RecordReceipt");
                     return HttpHelper.FailedContent("WantedController/RecordReceipt");
                 }
 
@@ -84,15 +83,11 @@ namespace Ecom.Controllers
             {
                 var result = await _saleFactoryService.AddAsync(model);
 
-                if (result != null)
+                if (result.Value == false) 
                 {
-                    return new SuccessResponse(200, Messages.AddedSuccesfully);
-                }
-                else
-                {
-                    //return new ErrorResponse("WantedController/RecordSaleFactore");
                     return HttpHelper.FailedContent("WantedController/RecordSaleFactore");
                 }
+                return new SuccessResponse(200, Messages.AddedSuccesfully);
             }
             catch (Exception ex)
             {
@@ -105,12 +100,11 @@ namespace Ecom.Controllers
         [Route("AddCategory")]
         public async Task<ActionResult<IResponse>> AddCategory(CategoryDto model)
         {
-
             try
             {
                 var result = await _categoryService.AddAsync(model);
 
-                if (result != null)
+                if (result.Value == true)
                 {
                     return new SuccessResponse(200, Messages.AddedSuccesfully);
                 }
