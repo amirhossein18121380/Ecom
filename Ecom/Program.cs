@@ -42,6 +42,7 @@ builder.Services.AddScoped<IReceiptService, ReceiptManager>();
 builder.Services.AddScoped<ICategoryService, CategoryManager>();
 builder.Services.AddScoped<ISaleFactoryService, SaleFactoryManager>();
 
+//builder.Services.AddAutoMapper();
 
 var mappingConfig = new MapperConfiguration(mc =>
 {
