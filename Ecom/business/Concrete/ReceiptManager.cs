@@ -7,6 +7,7 @@ using DataModel.Dtos;
 using DataModel.Models;
 using Ecom.business.Abstract;
 using Ecom.business.FluentValidation;
+using Ecom.Common.DataAccess;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
 using Microsoft.AspNetCore.Mvc;
@@ -20,7 +21,8 @@ namespace Ecom.business.Concrete
         private IRecriptRepository _recriptRepository;
         private IProductReceiptRepository _productReceiptRepository;
         private IMapper _mapper;
-        public ReceiptManager(IRecriptRepository recriptRepository, IMapper mapper, IProductReceiptRepository productReceiptRepository, IProductRepository productRepository)
+        private ITransac _transac;
+        public ReceiptManager(IRecriptRepository recriptRepository, IMapper mapper, IProductReceiptRepository productReceiptRepository, IProductRepository productRepository, ITransac transac)
         {
             _recriptRepository = recriptRepository;
             _mapper = mapper;
@@ -60,18 +62,25 @@ namespace Ecom.business.Concrete
 
             foreach (var productid in model.ProductsIds)
             {
-                var resriv = new ProductReceipt()
+                try
                 {
-                    ReceiptId = res.Id,
-                    ProductId = productid
-                };
+                    _transac.BeginTransaction();
+                    var resriv = new ProductReceipt() { ReceiptId = res.Id, ProductId = productid };
 
-                var rs = await _productReceiptRepository.AddAsync(resriv);
+                    var rs = await _productReceiptRepository.AddAsync(resriv);
 
-                if (rs == null || rs.Id == 0)
+                    _transac.CommitTransaction();
+
+                    if (rs == null || rs.Id == 0)
+                    {
+                        _transac.TransactionRoleBack();
+                        return HttpHelper.FailedContent("something wrong with productReceiptRepository");
+                        ///some extra logging things.......
+                    }
+                }
+                finally
                 {
-                    return HttpHelper.FailedContent("something wrong with productReceiptRepository");
-                    ///some extra logging things.......
+                    _transac.Dispose();
                 }
             }
             return true;

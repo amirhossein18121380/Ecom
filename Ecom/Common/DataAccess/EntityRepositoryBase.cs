@@ -1,10 +1,12 @@
-﻿using System.Linq.Expressions;
+﻿using System.Data;
+using System.Linq.Expressions;
 using Common.Entities;
+using DataAccess.Concrete.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Common.DataAccess
 {
-
     public class EntityRepositoryBase<TEntity, TContext> : IEntityRepositoryBase<TEntity> where TEntity : class, IEntity, new()
   where TContext : DbContext
     {
@@ -27,7 +29,6 @@ namespace Common.DataAccess
             return entity;
         }
 
-
         public TEntity GetById(long id)
         {
             return _context.Set<TEntity>().Find(id);
@@ -37,6 +38,7 @@ namespace Common.DataAccess
         {
             return await _context.Set<TEntity>().FindAsync(id);
         }
+
     }
 }
 

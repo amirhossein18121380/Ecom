@@ -7,6 +7,7 @@ using DataAccess.Concrete.Context;
 using DataAccess.Concrete.EntityFramework;
 using Ecom.business.Abstract;
 using Ecom.business.Concrete;
+using Ecom.Common.DataAccess;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
 using Ecom.DataAccess.Concrete.EntityFramework;
@@ -42,6 +43,9 @@ builder.Services.AddScoped<IReceiptService, ReceiptManager>();
 builder.Services.AddScoped<ICategoryService, CategoryManager>();
 builder.Services.AddScoped<ISaleFactoryService, SaleFactoryManager>();
 
+builder.Services.AddScoped<ITransac, Transac>();
+
+//builder.Services.AddAutoMapper();
 
 var mappingConfig = new MapperConfiguration(mc =>
 {

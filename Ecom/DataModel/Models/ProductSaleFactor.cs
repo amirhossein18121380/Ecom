@@ -9,6 +9,6 @@ namespace DataModel.Models
         public long ProductId { get; set; }
 
         //public SaleFactor SaleFactor { get; set; }
-        //public Product Product { get; set; }
+       
     }
 }

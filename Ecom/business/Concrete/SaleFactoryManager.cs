@@ -7,6 +7,7 @@ using DataModel.Dtos;
 using DataModel.Models;
 using Ecom.business.Abstract;
 using Ecom.business.FluentValidation;
+using Ecom.Common.DataAccess;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
 using Microsoft.AspNetCore.Mvc;
@@ -19,12 +20,15 @@ namespace Ecom.business.Concrete
         private ISaleFactorRepository _saleFactorRepository;
         private IProductSaleFactorRepository _productSaleFactorRepository;
         private IMapper _mapper;
-        public SaleFactoryManager(ISaleFactorRepository saleFactorRepository, IMapper mapper, IProductSaleFactorRepository productSaleFactorRepository, IProductRepository productRepository)
+        private ITransac _transac;
+        public SaleFactoryManager(ISaleFactorRepository saleFactorRepository, IMapper mapper, IProductSaleFactorRepository productSaleFactorRepository,
+            IProductRepository productRepository, ITransac transac)
         {
             _saleFactorRepository = saleFactorRepository;
             _mapper = mapper;
             _productSaleFactorRepository = productSaleFactorRepository;
             _productRepository = productRepository;
+            _transac = transac;
         }
 
         [ValidationAspect(typeof(SaleFactorSaleFactorDtoValidation))]
@@ -57,18 +61,24 @@ namespace Ecom.business.Concrete
 
             foreach (var productId in model.ProductIds)
             {
-                var factor = new ProductSaleFactor()
+                try
                 {
-                    SaleFactorId = res.Id,
-                    ProductId = productId
-                };
+                    _transac.BeginTransaction();
+                    var factor = new ProductSaleFactor() { SaleFactorId = res.Id, ProductId = productId };
 
-                var rs = await _productSaleFactorRepository.AddAsync(factor);
+                    var rs = await _productSaleFactorRepository.AddAsync(factor);
 
-                if (rs == null || rs.Id == 0)
+                    _transac.CommitTransaction();
+                    if (rs == null || rs.Id == 0)
+                    {
+                        _transac.TransactionRoleBack();
+                        return HttpHelper.FailedContent("something wrong with productReceiptRepository");
+                        ///some extra logging things.......
+                    }
+                }
+                finally
                 {
-                    return HttpHelper.FailedContent("something wrong with productReceiptRepository");
-                    ///some extra logging things.......
+                    _transac.Dispose();
                 }
             }
 

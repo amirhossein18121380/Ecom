@@ -4,6 +4,7 @@ using Common.Utilities;
 using DataAccess.Abstract;
 using DataModel.Models;
 using Ecom.business.Abstract;
+using Ecom.Common.DataAccess;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
 using Ecom.DataModel.Dtos;
@@ -15,6 +16,7 @@ namespace Ecom.business.Concrete
     public class CategoryManager : ICategoryService
     {
         private ICategoryRepository _categoryRepository;
+        
         private IMapper _mapper;
         public CategoryManager(ICategoryRepository categoryRepository, IMapper mapper)
         {
