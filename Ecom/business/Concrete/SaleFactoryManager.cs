@@ -10,6 +10,7 @@ using Ecom.business.FluentValidation;
 using Ecom.Common.DataAccess;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
+using Ecom.DataModel.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.business.Concrete
@@ -82,6 +83,22 @@ namespace Ecom.business.Concrete
                 }
             }
 
+            return true;
+        }
+
+        public async Task<ActionResult<bool>> AddSaleFactorAsync(AddSaleFactorDto model)
+        {
+            var SaleFactor = _mapper.Map<SaleFactor>(model);
+
+            SaleFactor.TotalCost = model.TotalCost;
+            SaleFactor.ReceiptNumber = model.ReceiptNumber;
+            SaleFactor.ReceiptDate = DateTime.Now;
+
+            var res = _saleFactorRepository.AddAsync(SaleFactor);
+            if (res == null)
+            {
+                return HttpHelper.FailedContent("something wrong");
+            }
             return true;
         }
     }

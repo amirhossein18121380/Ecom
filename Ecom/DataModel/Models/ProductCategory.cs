@@ -8,6 +8,7 @@ namespace DataModel.Models
         public long CategoryId { get; set; }
         public long ProductId { get; set; }
 
-     
+        public ICollection<Product> products { get; set; }
+        public ICollection<Category> categories { get; set; }
     }
 }

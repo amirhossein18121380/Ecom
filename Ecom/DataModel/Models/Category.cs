@@ -8,5 +8,7 @@ namespace DataModel.Models
         public long ParentId { get; set; }
         public string Title { get; set; }
         public DateTime Createon { get; set; }
+
+        public ProductCategory productCategory { get; set; }
     }
 }

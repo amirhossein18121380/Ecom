@@ -24,6 +24,8 @@ namespace DataAccess.Concrete.Context
         public virtual DbSet<ProductSaleFactor> ProductSaleFactors { get; set; } = null!;
         public virtual DbSet<Receipt> Receipts { get; set; } = null!;
         public virtual DbSet<SaleFactor> SaleFactors { get; set; } = null!;
+        //public virtual DbSet<SaleFactorItem> SaleFactorItem { get; set; } = null!;
+        //public virtual DbSet<ReceivedItems> ReceivedItems { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

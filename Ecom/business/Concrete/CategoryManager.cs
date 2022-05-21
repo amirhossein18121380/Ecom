@@ -16,12 +16,13 @@ namespace Ecom.business.Concrete
     public class CategoryManager : ICategoryService
     {
         private ICategoryRepository _categoryRepository;
-        
+        private IProductCategoryRepository _productCategoryRepository;
         private IMapper _mapper;
-        public CategoryManager(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoryManager(ICategoryRepository categoryRepository, IMapper mapper, IProductCategoryRepository productCategoryRepository)
         {
             _categoryRepository = categoryRepository;
             _mapper = mapper;
+            _productCategoryRepository= productCategoryRepository;
         }
 
         [ValidationAspect(typeof(AddProductValidator))]
@@ -41,7 +42,56 @@ namespace Ecom.business.Concrete
                 return HttpHelper.FailedContent("category not added");
             }
     
-            return false;
+            return true;
+        }
+
+        public async Task<ActionResult<bool>> UpdateAsync(CategoryDto model)
+        {
+            var product = _mapper.Map<Category>(model);
+
+            var res = await _categoryRepository.GetByIdAsync(product.Id);
+            if(res == null)
+            {
+                return HttpHelper.FailedContent("failed");
+            }
+
+            var sth = new Category()
+            {
+                Title = res.Title,
+                ParentId = res.ParentId,
+                Createon = DateTime.Now,
+            };
+
+            var result = _categoryRepository.UpdateAsync(res);
+
+            if (result == null)
+            {
+                return HttpHelper.FailedContent("category not added");
+            }
+
+            return true;
+        }
+
+
+        public async Task<ActionResult<bool>> RemoveAsync(int id)
+        {
+            var exist = await _categoryRepository.GetByIdAsync(id);
+            if (exist != null)
+            {
+                var category = await _productCategoryRepository.GetByCategoryIdAsync(exist.Id);
+                if (category != null)
+                {
+                    return HttpHelper.FailedContent("fail");
+                }
+                var res = _productCategoryRepository.RemoveAsync(category);
+                if(res != null)
+                {
+                    return HttpHelper.FailedContent("fail");
+                }
+                return true;
+            }
+
+            return HttpHelper.NotFoundContent("wrong");
         }
     }
 }

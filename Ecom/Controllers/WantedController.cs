@@ -40,7 +40,6 @@ namespace Ecom.Controllers
                 }
                 else
                 {
-                    //return new ErrorResponse("WantedController/AddProduct");
                     return HttpHelper.FailedContent("WantedController / AddProduct");
                 }
             }
@@ -50,14 +49,58 @@ namespace Ecom.Controllers
             }
         }
 
+        //[HttpPost]
+        //[Route("RecordReceipt")]
+        //public async Task<ActionResult<IResponse>> RecordReceipt([FromForm] ReceiptDto model)
+        //{
+        //    try
+        //    {
+        //        var result = await _receiptService.AddAsync(model);
+
+        //        if (result.Value == true)
+        //        {
+        //            return new SuccessResponse(200, Messages.AddedSuccesfully);
+        //        }
+        //        else
+        //        {
+        //            return HttpHelper.FailedContent("WantedController/RecordReceipt");
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HttpHelper.ExceptionContent(ex);
+        //    }
+        //}
+
+        //[HttpPost]
+        //[Route("RecordSaleFactore")]
+        //public async Task<ActionResult<IResponse>> RecordSaleFactore([FromForm] SaleFactorDto model)
+        //{
+        //    try
+        //    {
+        //        var result = await _saleFactoryService.AddAsync(model);
+
+        //        if (result.Value == false) 
+        //        {
+        //            return HttpHelper.FailedContent("WantedController/RecordSaleFactore");
+        //        }
+        //        return new SuccessResponse(200, Messages.AddedSuccesfully);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return HttpHelper.ExceptionContent(ex);
+        //    }
+        //}
+
 
         [HttpPost]
-        [Route("RecordReceipt")]
-        public async Task<ActionResult<IResponse>> RecordReceipt([FromForm] ReceiptDto model)
+        [Route("Receipt")]
+        public async Task<ActionResult<IResponse>> Receipt(AddReceiptDto model)
         {
             try
             {
-                var result = await _receiptService.AddAsync(model);
+                var result = await _receiptService.AddReceiptAsync(model);
 
                 if (result.Value == true)
                 {
@@ -76,43 +119,18 @@ namespace Ecom.Controllers
         }
 
         [HttpPost]
-        [Route("RecordSaleFactore")]
-        public async Task<ActionResult<IResponse>> RecordSaleFactore([FromForm] SaleFactorDto model)
+        [Route("SaleFactore")]
+        public async Task<ActionResult<IResponse>> SaleFactore(AddSaleFactorDto model)
         {
             try
             {
-                var result = await _saleFactoryService.AddAsync(model);
+                var result = await _saleFactoryService.AddSaleFactorAsync(model);
 
-                if (result.Value == false) 
+                if (result.Value == false)
                 {
-                    return HttpHelper.FailedContent("WantedController/RecordSaleFactore");
+                    return HttpHelper.FailedContent("WantedController/SaleFactore");
                 }
                 return new SuccessResponse(200, Messages.AddedSuccesfully);
-            }
-            catch (Exception ex)
-            {
-                return HttpHelper.ExceptionContent(ex);
-            }
-        }
-
-
-        [HttpPost]
-        [Route("AddCategory")]
-        public async Task<ActionResult<IResponse>> AddCategory(CategoryDto model)
-        {
-            try
-            {
-                var result = await _categoryService.AddAsync(model);
-
-                if (result.Value == true)
-                {
-                    return new SuccessResponse(200, Messages.AddedSuccesfully);
-                }
-                else
-                {
-                    //return new ErrorResponse("WantedController/RecordSaleFactore");
-                    return HttpHelper.FailedContent("WantedController/RecordSaleFactore");
-                }
             }
             catch (Exception ex)
             {

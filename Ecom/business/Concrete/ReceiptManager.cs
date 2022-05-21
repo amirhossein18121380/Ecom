@@ -10,6 +10,7 @@ using Ecom.business.FluentValidation;
 using Ecom.Common.DataAccess;
 using Ecom.Common.Utilities;
 using Ecom.DataAccess.Abstract;
+using Ecom.DataModel.Dtos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Ecom.business.Concrete
@@ -28,6 +29,7 @@ namespace Ecom.business.Concrete
             _mapper = mapper;
             _productReceiptRepository = productReceiptRepository;
             _productRepository = productRepository;
+            _transac = transac;
         }
 
         [ValidationAspect(typeof(ReceipDtoValidation))]
@@ -82,6 +84,23 @@ namespace Ecom.business.Concrete
                 {
                     _transac.Dispose();
                 }
+            }
+            return true;
+        }
+
+
+        public async Task<ActionResult<bool>> AddReceiptAsync(AddReceiptDto model)
+        {
+            var receipt = _mapper.Map<Receipt>(model);
+
+            receipt.TotalCost = model.TotalCost;
+            receipt.ReceiptNumber = model.ReceiptNumber;
+            receipt.ReceiptDate = DateTime.Now;
+
+            var res = _recriptRepository.AddAsync(receipt);
+            if (res == null)
+            {
+                return HttpHelper.FailedContent("something wrong");
             }
             return true;
         }
